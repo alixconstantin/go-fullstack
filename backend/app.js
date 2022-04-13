@@ -1,6 +1,16 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
+// Connexion a Mongoose
+mongoose.connect('mongodb+srv://alix:raku3louis@cluster0.buobr.mongodb.net/test?retryWrites=true&w=majority',
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 const app = express();
+
+app.use(express.json());
 
 // Permet en configurant les headers, de communiquer entre l'application du FrontEnd avec celle du BackEnd
 // Pour permettre des requêtes cross-origin (et empêcher des erreurs CORS), des headers spécifiques de contrôle d'accès doivent être précisés pour tous les objets de réponse.
@@ -11,8 +21,16 @@ app.use((req, res, next) => {
   next();
 });
 
+
+app.post('/api/stuff', (req, res, next) => {
+  console.log(req.body);
+  res.status(201).json({
+    message: 'Objet créé !'
+  });
+});
+
 // Renvoie sur la route api/stuff cette objet Json
-app.use('/api/stuff', (req, res, next) => {
+app.get('/api/stuff', (req, res, next) => {
   const stuff = [
     {
       _id: 'oeihfzeoi',
@@ -33,5 +51,7 @@ app.use('/api/stuff', (req, res, next) => {
   ];
   res.status(200).json(stuff);
 });
+
+
 
 module.exports = app;
