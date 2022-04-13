@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const Thing = require('./models/Things');
+
 // Connexion a Mongoose
 mongoose.connect('mongodb+srv://alix:raku3louis@cluster0.buobr.mongodb.net/test?retryWrites=true&w=majority',
   { useNewUrlParser: true,
@@ -23,10 +25,13 @@ app.use((req, res, next) => {
 
 
 app.post('/api/stuff', (req, res, next) => {
-  console.log(req.body);
-  res.status(201).json({
-    message: 'Objet créé !'
+  delete req.body._id;
+  const thing = new Thing({
+    ...req.body               // ...req.body = title : req.body.title, etc. , l'opérateur Spread permet de récupérer l'ensemble
   });
+  thing.save()
+    .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+    .catch(error => res.status(400).json({ error }));
 });
 
 // Renvoie sur la route api/stuff cette objet Json
